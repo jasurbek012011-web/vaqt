@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WORLD CLOCK - Dunyo vaqtlari</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #0b1020;
+    color: white;
+    min-height: 100vh;
+}
+
+header {
+    text-align: center;
+    padding: 35px 15px;
+    background: linear-gradient(135deg,#101d40,#172c55);
+}
+
+header h1 {
+    font-size: 36px;
+    color: #42d9ff;
+    margin-bottom: 12px;
+}
+
+header p {
+    color: #b9c7df;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+.search {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid #26395e;
+    border-radius: 12px;
+    background: #141f38;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    margin-bottom: 25px;
+}
+
+.search:focus {
+    border-color: #42d9ff;
+}
+
+.title {
+    font-size: 23px;
+    margin-bottom: 20px;
+    color: #42d9ff;
+}
+
+.clock-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(230px,1fr));
+    gap: 20px;
+}
+
+.clock-card {
+    background: linear-gradient(145deg,#182644,#101a30);
+    border: 1px solid #293d60;
+    border-radius: 16px;
+    padding: 25px;
+    transition: 0.3s;
+}
+
+.clock-card:hover {
+    transform: translateY(-5px);
+    border-color: #42d9ff;
+    box-shadow: 0 5px 25px #42d9ff22;
+}
+
+.city {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.country {
+    color: #9eacc5;
+    font-size: 14px;
+}
+
+.time {
+    font-size: 32px;
+    font-weight: bold;
+    color: #42d9ff;
+    margin: 20px 0 10px;
+}
+
+.date {
+    color: #aab8ce;
+    font-size: 14px;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: #71809a;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌍 WORLD CLOCK</h1>
+    <p>Butun dunyo vaqti bir joyda!</p>
+</header>
+
+<div class="container">
+
+    <input
+        type="text"
+        class="search"
+        id="search"
+        placeholder="🔍 Davlat yoki shahar qidiring..."
+    >
+
+    <h2 class="title">🕒 Dunyo vaqtlari</h2>
+
+    <div class="clock-grid" id="clockGrid"></div>
+
+</div>
+
+<footer>
+    © 2026 WORLD CLOCK | Barcha huquqlar himoyalangan
+</footer>
+
+<script>
+
+// Dunyoning mashhur shaharlari
+const cities = [
+    {city:"Toshkent", country:"O‘zbekiston 🇺🇿", zone:"Asia/Tashkent"},
+    {city:"London", country:"Angliya 🇬🇧", zone:"Europe/London"},
+    {city:"New York", country:"AQSH 🇺🇸", zone:"America/New_York"},
+    {city:"Tokyo", country:"Yaponiya 🇯🇵", zone:"Asia/Tokyo"},
+    {city:"Dubai", country:"BAA 🇦🇪", zone:"Asia/Dubai"},
+    {city:"Moscow", country:"Rossiya 🇷🇺", zone:"Europe/Moscow"},
+    {city:"Paris", country:"Fransiya 🇫🇷", zone:"Europe/Paris"},
+    {city:"Berlin", country:"Germaniya 🇩🇪", zone:"Europe/Berlin"},
+    {city:"Seoul", country:"Janubiy Koreya 🇰🇷", zone:"Asia/Seoul"},
+    {city:"Beijing", country:"Xitoy 🇨🇳", zone:"Asia/Shanghai"},
+    {city:"Istanbul", country:"Turkiya 🇹🇷", zone:"Europe/Istanbul"},
+    {city:"Delhi", country:"Hindiston 🇮🇳", zone:"Asia/Kolkata"},
+    {city:"Bangkok", country:"Tailand 🇹🇭", zone:"Asia/Bangkok"},
+    {city:"Singapore", country:"Singapur 🇸🇬", zone:"Asia/Singapore"},
+    {city:"Sydney", country:"Avstraliya 🇦🇺", zone:"Australia/Sydney"},
+    {city:"Toronto", country:"Kanada 🇨🇦", zone:"America/Toronto"},
+    {city:"Los Angeles", country:"AQSH 🇺🇸", zone:"America/Los_Angeles"},
+    {city:"Rome", country:"Italiya 🇮🇹", zone:"Europe/Rome"},
+    {city:"Madrid", country:"Ispaniya 🇪🇸", zone:"Europe/Madrid"},
+    {city:"Cairo", country:"Misr 🇪🇬", zone:"Africa/Cairo"},
+    {city:"Riyadh", country:"Saudiya Arabistoni 🇸🇦", zone:"Asia/Riyadh"},
+    {city:"Karachi", country:"Pokiston 🇵🇰", zone:"Asia/Karachi"},
+    {city:"Kuala Lumpur", country:"Malayziya 🇲🇾", zone:"Asia/Kuala_Lumpur"},
+    {city:"Dhaka", country:"Bangladesh 🇧🇩", zone:"Asia/Dhaka"},
+    {city:"Baku", country:"Ozarbayjon 🇦🇿", zone:"Asia/Baku"},
+    {city:"Almaty", country:"Qozog‘iston 🇰🇿", zone:"Asia/Almaty"},
+    {city:"New Delhi", country:"Hindiston 🇮🇳", zone:"Asia/Kolkata"},
+    {city:"Helsinki", country:"Finlandiya 🇫🇮", zone:"Europe/Helsinki"},
+    {city:"Amsterdam", country:"Niderlandiya 🇳🇱", zone:"Europe/Amsterdam"},
+    {city:"São Paulo", country:"Braziliya 🇧🇷", zone:"America/Sao_Paulo"}
+];
+
+const grid = document.getElementById("clockGrid");
+const search = document.getElementById("search");
+
+// Kartalarni yaratish
+function showCities(list) {
+    grid.innerHTML = "";
+
+    if (list.length === 0) {
+        grid.innerHTML = "<p>Hech narsa topilmadi!</p>";
+        return;
+    }
+
+    list.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "clock-card";
+
+        card.innerHTML = `
+            <div class="city">${item.city}</div>
+            <div class="country">${item.country}</div>
+            <div class="time" id="time-${index}">00:00:00</div>
+            <div class="date" id="date-${index}"></div>
+        `;
+
+        grid.appendChild(card);
+    });
+
+    updateClocks(list);
+}
+
+// Vaqtni yangilash
+function updateClocks(list = cities) {
+    list.forEach((item, index) => {
+        const time = new Date();
+
+        const timeElement = document.getElementById("time-" + index);
+        const dateElement = document.getElementById("date-" + index);
+
+        if (!timeElement || !dateElement) return;
+
+        timeElement.textContent = new Intl.DateTimeFormat(
+            "uz-UZ",
+            {
+                timeZone: item.zone,
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
+            }
+        ).format(time);
+
+        dateElement.textContent = new Intl.DateTimeFormat(
+            "uz-UZ",
+            {
+                timeZone: item.zone,
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            }
+        ).format(time);
+    });
+}
+
+// Qidiruv
+search.addEventListener("input", function() {
+    const value = this.value.toLowerCase();
+
+    const filtered = cities.filter(item =>
+        item.city.toLowerCase().includes(value) ||
+        item.country.toLowerCase().includes(value) ||
+        item.zone.toLowerCase().includes(value)
+    );
+
+    showCities(filtered);
+});
+
+// Har sekundda yangilash
+showCities(cities);
+
+setInterval(() => {
+    updateClocks(
+        cities.filter(item => {
+            const value = search.value.toLowerCase();
+
+            return item.city.toLowerCase().includes(value) ||
+                   item.country.toLowerCase().includes(value) ||
+                   item.zone.toLowerCase().includes(value);
+        })
+    );
+}, 1000);
+
+</script>
+
+</body>
+</html>
